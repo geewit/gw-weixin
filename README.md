@@ -1,2 +1,1 @@
-# gw-weixin
-weixin interface wrapper
+# 简直碉堡的微信公众号sdk

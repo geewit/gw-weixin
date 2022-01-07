@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        maven { url 'https://repo.spring.io/release' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'gw-weixin'
+
+apply from: 'https://gitee.com/geewit/gradle_publish_sonatype/raw/master/sub_settings.gradle'
