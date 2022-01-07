@@ -27,7 +27,7 @@ public interface APIs {
                 .uri("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={secret}")
                 .method(HttpMethod.GET)
                 .request(API.Request.<Request>builder().type(AccessToken.Request.class).build())
-                .response(API.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON).build())
+                .response(API.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON_UTF8).type(AccessToken.Response.class).build())
                 .build();
 
         @Setter

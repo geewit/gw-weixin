@@ -27,6 +27,7 @@ public interface API<REQ extends CommonRequest, RES extends CommonResponse> {
     class Request<REQ extends CommonRequest> {
         private MediaType mediaType;
         private Class<REQ> type;
+        @Builder.Default
         private boolean withToken = false;
 
         @Override

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
 import java.net.URI;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,9 +28,6 @@ import java.util.Objects;
 @Setter
 @Getter
 public class WeixinAPI<REQ extends CommonRequest, RES extends CommonResponse> implements API<REQ, RES> {
-    private WeixinAPI() {
-    }
-
     private String name;
     private String uri;
     private HttpMethod method;
@@ -86,7 +84,10 @@ public class WeixinAPI<REQ extends CommonRequest, RES extends CommonResponse> im
         }
         Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
         URI requestUri = uriTemplate.expand(uriVariables);
-        HttpEntity<REQ> requestEntity = new HttpEntity<>(request);
+        HttpEntity<REQ> requestEntity = null;
+        if (EnumSet.of(HttpMethod.POST, HttpMethod.PUT).contains(this.method)) {
+            requestEntity = new HttpEntity<>(request);
+        }
 
         ResponseEntity<RES> responseEntity = restTemplate.exchange(requestUri, HttpMethod.valueOf(this.method.name()), requestEntity, response.getType());
         if (!responseEntity.getStatusCode().is2xxSuccessful()) {

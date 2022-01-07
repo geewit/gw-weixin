@@ -12,6 +12,9 @@ project(':api:common') {
         implementation("io.geewit.utils.web:gw-web-utils:$gw_utils_version")
         compileOnly("org.projectlombok:lombok:$lombok_version")
         annotationProcessor("org.projectlombok:lombok:$lombok_version")
+        testImplementation("org.junit.jupiter:junit-jupiter:$junit_version")
+        testImplementation("org.junit.platform:junit-platform-launcher:$junit_platform_version")
+        testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2_version")
         testAnnotationProcessor("org.projectlombok:lombok:$lombok_version")
         testCompileOnly("org.projectlombok:lombok:$lombok_version")
     }
