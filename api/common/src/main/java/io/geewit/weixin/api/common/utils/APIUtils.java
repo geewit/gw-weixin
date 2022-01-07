@@ -67,14 +67,10 @@ public class APIUtils {
                     if (Objects.nonNull(errcode)) {
                         throw new IllegalArgumentException("errcode：" + errcode + " errmsg：" + responseParameters.get("errmsg"));
                     }
-                    Map<String, Object> source = responseParameters
-                            .entrySet()
-                            .stream()
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     RES instance = null;
                     try {
                         instance = clazz.newInstance();
-                        MapToPojoUtils.mapToPojo(source, instance);
+                        MapToPojoUtils.mapToPojo(responseParameters, instance);
                     } catch (InstantiationException | IllegalAccessException e) {
                         logger.info(e.getMessage(), e);
                     }
