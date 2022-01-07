@@ -70,7 +70,8 @@ public class WeixinAPI<REQ extends CommonRequest, RES extends CommonResponse> im
     }
 
     @Override
-    public RES invoke(RestTemplate restTemplate, REQ request) {
+    public RES invoke(REQ request) {
+        RestTemplate restTemplate = APIUtils.ofRestTemplate(this);
         UriTemplate uriTemplate = new UriTemplate(this.uri);
         if (this.request.isWithToken()) {
             APIs.AccessToken.Response accessToken = APIUtils.getAccessTokenCached(APIUtils.FETCH_ACCESS_TOKEN_REQUEST);

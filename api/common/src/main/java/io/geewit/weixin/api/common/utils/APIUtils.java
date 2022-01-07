@@ -1,39 +1,22 @@
 package io.geewit.weixin.api.common.utils;
 
-import io.geewit.core.utils.reflection.BeanUtils;
 import io.geewit.weixin.api.common.exception.WxApiException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.geewit.weixin.api.common.APIs;
 import io.geewit.weixin.api.common.model.API;
+import io.geewit.weixin.api.common.model.CommonRequest;
 import io.geewit.weixin.api.common.model.CommonResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.http.converter.GenericHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class APIUtils {
     private final static Logger logger = LoggerFactory.getLogger(APIUtils.class);
@@ -48,54 +31,8 @@ public class APIUtils {
         }
     });
 
-    public static <RES extends CommonResponse> RestTemplate ofRestTemplate(Class<RES> responseType) {
-        AbstractHttpMessageConverter responseTypeConverter = new AbstractHttpMessageConverter<RES>() {
-            private final ParameterizedTypeReference<Map<String, Object>> STRING_OBJECT_MAP = new ParameterizedTypeReference<Map<String, Object>>() {
-            };
-
-            @Override
-            protected boolean supports(Class<?> clazz) {
-                return responseType.isAssignableFrom(clazz);
-            }
-
-            @Override
-            protected RES readInternal(Class<? extends RES> clazz, HttpInputMessage inputMessage) throws HttpMessageNotReadableException {
-                try {
-                    Map<String, Object> responseParameters = (Map<String, Object>) new MappingJackson2HttpMessageConverter()
-                            .read(STRING_OBJECT_MAP.getType(), null, inputMessage);
-                    Object errcode = responseParameters.get(API.ERRCODE);
-                    if (Objects.nonNull(errcode)) {
-                        throw new IllegalArgumentException("errcode：" + errcode + " errmsg：" + responseParameters.get("errmsg"));
-                    }
-                    RES instance = null;
-                    try {
-                        instance = clazz.newInstance();
-                        MapToPojoUtils.mapToPojo(responseParameters, instance);
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        logger.info(e.getMessage(), e);
-                    }
-                    return instance;
-                } catch (Exception ex) {
-                    throw new HttpMessageNotReadableException(
-                            "An error occurred reading the OAuth 2.0 Access Token Response: " + ex.getMessage(), ex,
-                            inputMessage);
-                }
-            }
-
-            @Override
-            protected void writeInternal(RES res, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
-            }
-        };
-        responseTypeConverter.setDefaultCharset(StandardCharsets.UTF_8);
-        responseTypeConverter.setSupportedMediaTypes(
-                Stream.of(
-                        MediaType.APPLICATION_JSON_UTF8,
-                        MediaType.TEXT_PLAIN,
-                        MediaType.TEXT_HTML,
-                        new MediaType(MediaType.APPLICATION_JSON.getType(), "*+json")
-                ).collect(Collectors.toList()));
-        RestTemplate restTemplate = new RestTemplate(
-                Collections.singletonList(responseTypeConverter));
+    public static <REQ extends CommonRequest, RES extends CommonResponse> RestTemplate ofRestTemplate(API<REQ, RES> api) {
+        RestTemplate restTemplate = new RestTemplate(Collections.singletonList(api.getResponse().getResponseConverter()));
         return restTemplate;
     }
 
@@ -159,8 +96,7 @@ public class APIUtils {
     }
 
     private static APIs.AccessToken.Response getAccessToken(APIs.AccessToken.Request request) throws IllegalArgumentException {
-        RestTemplate restTemplate = ofRestTemplate(APIs.AccessToken.Response.class);
-        APIs.AccessToken.Response response = APIs.AccessToken.FETCH_ACCESS_TOKEN.invoke(restTemplate, request);
+        APIs.AccessToken.Response response = APIs.AccessToken.FETCH_ACCESS_TOKEN.invoke(request);
         return response;
     }
 
