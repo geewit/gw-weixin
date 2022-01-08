@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.*;
 import java.nio.file.*;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 public class APIUtils {
     private final static Logger logger = LoggerFactory.getLogger(APIUtils.class);
@@ -24,7 +25,9 @@ public class APIUtils {
     /**
      * AccessToken 缓存
      */
-    private final static LoadingCache<APIs.AccessToken.Request, APIs.AccessToken.Response> accessTokenCache = CacheBuilder.newBuilder()/*.expireAfterWrite(7000L, TimeUnit.SECONDS)*/.build(new CacheLoader<APIs.AccessToken.Request, APIs.AccessToken.Response>() {
+    private final static LoadingCache<APIs.AccessToken.Request, APIs.AccessToken.Response> accessTokenCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(3600L, TimeUnit.SECONDS)
+            .build(new CacheLoader<APIs.AccessToken.Request, APIs.AccessToken.Response>() {
         @Override
         public APIs.AccessToken.Response load(APIs.AccessToken.Request request) {
             return getAccessTokenPersisted(request);

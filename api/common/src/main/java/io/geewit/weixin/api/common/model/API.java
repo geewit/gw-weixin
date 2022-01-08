@@ -1,19 +1,25 @@
 package io.geewit.weixin.api.common.model;
 
+import io.geewit.core.utils.reflection.BeanUtils;
+import io.geewit.weixin.api.common.APIs;
+import io.geewit.weixin.api.common.exception.WxApiException;
+import io.geewit.weixin.api.common.utils.APIUtils;
 import io.geewit.weixin.api.common.utils.MapToPojoUtils;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplate;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -123,18 +129,56 @@ public interface API<REQ extends CommonRequest, RES extends CommonResponse> {
 
     Response<RES> getResponse();
 
+    String getName();
+
+    String getUri();
+
     /**
      * 请求
      * @return
      */
     HttpMethod getMethod();
 
+    default RestTemplate getRestTemplate() {
+        return APIUtils.ofRestTemplate(this);
+    }
+
     /**
      * 调用接口
-     * @param restTemplate
      * @param request
      * @return
      */
-    RES invoke(REQ request);
+    default RES invoke(REQ request) {
+        UriTemplate uriTemplate = new UriTemplate(this.getUri());
+        if (this.getRequest().isWithToken()) {
+            APIs.AccessToken.Response accessToken = APIUtils.getAccessTokenCached(APIUtils.FETCH_ACCESS_TOKEN_REQUEST);
+            if (StringUtils.isBlank(accessToken.getAccessToken())) {
+                throw new IllegalArgumentException("接口(" + this.getName() + ")的请求access_token不能为空");
+            } else {
+                request.accessToken = accessToken.getAccessToken();
+            }
+        } else {
+            request.accessToken = null;
+        }
+        Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
+        URI requestUri = uriTemplate.expand(uriVariables);
+        HttpEntity<REQ> requestEntity = null;
+        if (EnumSet.of(HttpMethod.POST, HttpMethod.PUT).contains(this.getMethod())) {
+            requestEntity = new HttpEntity<>(request);
+        }
 
+        RestTemplate restTemplate = this.getRestTemplate();
+        ResponseEntity<RES> responseEntity = restTemplate.exchange(requestUri, HttpMethod.valueOf(this.getMethod().name()), requestEntity, this.getResponse().getType());
+        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+            throw new WxApiException("接口(" + this.getName() + ")的响应状态码为:" + responseEntity.getStatusCodeValue());
+        }
+        RES response = responseEntity.getBody();
+        if (response == null) {
+            throw new WxApiException("接口(" + this.getName() + ")的响应为null");
+        }
+        if (response.failed()) {
+            throw new WxApiException("接口(" + this.getName() + ")的响应返回失败码:" + response.getErrcode());
+        }
+        return response;
+    }
 }

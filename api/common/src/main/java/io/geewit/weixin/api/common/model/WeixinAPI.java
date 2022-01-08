@@ -1,22 +1,9 @@
 package io.geewit.weixin.api.common.model;
 
-import io.geewit.core.utils.reflection.BeanUtils;
-import io.geewit.weixin.api.common.exception.WxApiException;
-import io.geewit.weixin.api.common.APIs;
-import io.geewit.weixin.api.common.utils.APIUtils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriTemplate;
-
-import java.net.URI;
-import java.util.EnumSet;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -67,40 +54,5 @@ public class WeixinAPI<REQ extends CommonRequest, RES extends CommonResponse> im
                 ", request=" + request +
                 ", response=" + response +
                 '}';
-    }
-
-    @Override
-    public RES invoke(REQ request) {
-        RestTemplate restTemplate = APIUtils.ofRestTemplate(this);
-        UriTemplate uriTemplate = new UriTemplate(this.uri);
-        if (this.request.isWithToken()) {
-            APIs.AccessToken.Response accessToken = APIUtils.getAccessTokenCached(APIUtils.FETCH_ACCESS_TOKEN_REQUEST);
-            if (StringUtils.isBlank(accessToken.getAccessToken())) {
-                throw new IllegalArgumentException("接口(" + this.name + ")的请求access_token不能为空");
-            } else {
-                request.accessToken = accessToken.getAccessToken();
-            }
-        } else {
-            request.accessToken = null;
-        }
-        Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
-        URI requestUri = uriTemplate.expand(uriVariables);
-        HttpEntity<REQ> requestEntity = null;
-        if (EnumSet.of(HttpMethod.POST, HttpMethod.PUT).contains(this.method)) {
-            requestEntity = new HttpEntity<>(request);
-        }
-
-        ResponseEntity<RES> responseEntity = restTemplate.exchange(requestUri, HttpMethod.valueOf(this.method.name()), requestEntity, response.getType());
-        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new WxApiException("接口(" + this.name + ")的响应状态码为:" + responseEntity.getStatusCodeValue());
-        }
-        RES response = responseEntity.getBody();
-        if (response == null) {
-            throw new WxApiException("接口(" + this.name + ")的响应为null");
-        }
-        if (response.failed()) {
-            throw new WxApiException("接口(" + this.name + ")的响应返回失败码:" + response.getErrcode());
-        }
-        return response;
     }
 }
