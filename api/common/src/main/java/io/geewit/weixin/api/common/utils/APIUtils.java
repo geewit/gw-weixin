@@ -99,7 +99,7 @@ public class APIUtils {
     }
 
     private static APIs.AccessToken.Response getAccessToken(APIs.AccessToken.Request request) throws IllegalArgumentException {
-        APIs.AccessToken.Response response = APIs.AccessToken.FETCH_ACCESS_TOKEN.invoke(request);
+        APIs.AccessToken.Response response = APIs.AccessToken.INVOKER.invoke(request);
         return response;
     }
 

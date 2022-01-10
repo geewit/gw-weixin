@@ -1,10 +1,10 @@
 package io.geewit.weixin.api.common.model;
 
 import io.geewit.core.utils.reflection.BeanUtils;
+import io.geewit.web.utils.JsonUtils;
 import io.geewit.weixin.api.common.APIs;
 import io.geewit.weixin.api.common.exception.WxApiException;
 import io.geewit.weixin.api.common.utils.APIUtils;
-import io.geewit.weixin.api.common.utils.MapToPojoUtils;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -13,15 +13,15 @@ import org.springframework.http.*;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +35,7 @@ public interface API<REQ extends CommonRequest, RES extends CommonResponse> {
     };
 
     String ACCESS_TOKEN_KEY = "access_token";
-    String WECHAT_ID = "wechat";
+    String WEIXIN_ID = "weixin";
     String OPENID_KEY = "openid";
     String LANG_KEY = "lang";
     String DEFAULT_LANG = "zh_CN";
@@ -78,18 +78,11 @@ public interface API<REQ extends CommonRequest, RES extends CommonResponse> {
                 @Override
                 protected RES readInternal(Class<? extends RES> clazz, HttpInputMessage inputMessage) throws HttpMessageNotReadableException {
                     try {
-                        Map<String, Object> responseParameters = (Map<String, Object>) new MappingJackson2HttpMessageConverter()
-                                .read(STRING_OBJECT_MAP.getType(), null, inputMessage);
-                        Object errcode = responseParameters.get(API.ERRCODE);
-                        if (Objects.nonNull(errcode)) {
-                            throw new IllegalArgumentException("errcode：" + errcode + " errmsg：" + responseParameters.get("errmsg"));
-                        }
-                        RES instance = null;
-                        try {
-                            instance = clazz.newInstance();
-                            MapToPojoUtils.mapToPojo(responseParameters, instance);
-                        } catch (InstantiationException | IllegalAccessException e) {
-                            logger.info(e.getMessage(), e);
+                        String responseBody = new BufferedReader(new InputStreamReader(inputMessage.getBody()))
+                                .lines().parallel().collect(Collectors.joining("\n"));
+                        RES instance = JsonUtils.fromJson(responseBody, type);
+                        if (instance.failed()) {
+                            throw new IllegalArgumentException("errcode：" + instance.getErrcode() + " errmsg：" + instance.getErrmsg());
                         }
                         return instance;
                     } catch (Exception ex) {
