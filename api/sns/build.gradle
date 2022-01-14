@@ -1,4 +1,4 @@
-project(':api:mp') {
+project(':api:sns') {
     dependencies {
         api(project(':api:common'))
         implementation("org.apache.commons:commons-lang3:$commons_lang3_version")

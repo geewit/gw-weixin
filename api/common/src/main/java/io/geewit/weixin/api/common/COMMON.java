@@ -2,63 +2,59 @@ package io.geewit.weixin.api.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.geewit.weixin.api.common.model.API;
-import io.geewit.weixin.api.common.model.CommonRequest;
-import io.geewit.weixin.api.common.model.CommonResponse;
-import io.geewit.weixin.api.common.model.WeixinAPI;
+import io.geewit.weixin.api.common.model.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * @author geewit
  * @since 2022-01-07
  */
-public interface APIs {
-
+public interface COMMON {
 
     /**
-     * 获取 AccessToken 接口定义
+     * access_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。
+     * access_token的存储至少要保留512个字符空间。
+     * access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。
+     *
+     * 公众平台的API调用所需的access_token的使用及生成方式说明：
+     * 1、建议公众号开发者使用中控服务器统一获取和刷新access_token，其他业务逻辑服务器所使用的access_token均来自于该中控服务器，不应该各自去刷新，否则容易造成冲突，导致access_token覆盖而影响业务；
+     * 2、目前access_token的有效期通过返回的expire_in来传达，目前是7200秒之内的值。中控服务器需要根据这个有效时间提前去刷新新access_token。在刷新过程中，中控服务器可对外继续输出的老access_token，此时公众平台后台会保证在5分钟内，新老access_token都可用，这保证了第三方业务的平滑过渡；
+     * 3、access_token的有效时间可能会在未来有调整，所以中控服务器不仅需要内部定时主动刷新，还需要提供被动刷新access_token的接口，这样便于业务服务器在API调用获知access_token已超时的情况下，可以触发access_token的刷新流程。
+     * 4、对于可能存在风险的调用，在开发者进行获取 access_token调用时进入风险调用确认流程，需要用户管理员确认后才可以成功获取。具体流程为：
+     *
+     * 开发者通过某IP发起调用->平台返回错误码[89503]并同时下发模板消息给公众号管理员->公众号管理员确认该IP可以调用->开发者使用该IP再次发起调用->调用成功。
+     * 如公众号管理员第一次拒绝该IP调用，用户在1个小时内将无法使用该IP再次发起调用，如公众号管理员多次拒绝该IP调用，该IP将可能长期无法发起调用。平台建议开发者在发起调用前主动与管理员沟通确认调用需求，或请求管理员开启IP白名单功能并将该IP加入IP白名单列表。
+     * 公众号和小程序均可以使用AppID和AppSecret调用本接口来获取access_token。AppID和AppSecret可在“微信公众平台-开发-基本配置”页中获得（需要已经成为开发者，且帐号没有异常状态）。
+     * 调用接口时，请登录“微信公众平台-开发-基本配置”提前将服务器IP地址添加到IP白名单中，点击查看设置方法，否则将无法调用成功。小程序无需配置IP白名单。
+     *
+     * 接口调用请求说明
+     * https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
      */
     interface AccessToken {
-        WeixinAPI<Request, Response> INVOKER = WeixinAPI.<Request, Response>builder()
+        AccessTokenInvoker<AccessTokenRequest, Response> INVOKER = AccessTokenInvoker.<AccessTokenRequest, Response>builder()
                 .name("获取AccessToken")
                 .uri("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={secret}")
                 .method(HttpMethod.GET)
-                .request(API.Request.<Request>builder().type(AccessToken.Request.class).build())
-                .response(API.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON_UTF8).type(AccessToken.Response.class).build())
+                .request(Invoker.Request.<AccessTokenRequest>builder()
+                        .build())
+                .response(Invoker.Response.<Response>builder()
+                        .mediaType(MediaType.APPLICATION_JSON_UTF8)
+                        .type(AccessToken.Response.class)
+                        .build())
                 .build();
 
+        /**
+         * 正常情况下，微信会返回下述JSON数据包给公众号：
+         * {"access_token":"ACCESS_TOKEN","expires_in":7200}
+         */
         @Setter
         @Getter
-        class Request extends CommonRequest {
-            /**
-             * 第三方用户唯一凭证
-             */
-            @JsonIgnore
-            private String appId;
-            /**
-             * 第三方用户唯一凭证密钥,即appsecret
-             */
-            @JsonIgnore
-            private String secret;
-
-            @Override
-            public String toString() {
-                return "FetchAccessToken.Request {" +
-                        "appId=" + appId +
-                        ", secret=" + secret +
-                        '}';
-            }
-        }
-
-        @Setter
-        @Getter
-        class Response extends CommonResponse {
+        class Response extends AccessTokenResponse {
             public Response() {
                 loadTimestamp = System.currentTimeMillis();
             }
@@ -81,22 +77,13 @@ public interface APIs {
             @JsonIgnore
             private Long loadTimestamp;
 
-            public boolean expired() {
-                if(loadTimestamp == null) {//过期
-                    return true;
-                } else {
-                    long expiredTimestamp = loadTimestamp + expiresIn * 1000;
-                    return System.currentTimeMillis() > expiredTimestamp;
-                }
-            }
-
             @Override
             public String toString() {
-                return "AccessToken.Response {" +
-                        "accessToken=" + accessToken +
-                        ", expiresIn=" + expiresIn +
-                        ", loadTimestamp=" + loadTimestamp +
-                        '}';
+                return "AccessToken.Response {"
+                        + "accessToken=" + accessToken
+                        + ", expiresIn=" + expiresIn
+                        + ", loadTimestamp=" + loadTimestamp
+                        + '}';
             }
         }
     }
@@ -105,12 +92,18 @@ public interface APIs {
      * 获取用户基本信息(UnionID机制)
      */
     interface UserInfo {
-        WeixinAPI<Request, Response> INVOKER = WeixinAPI.<Request, Response>builder()
+        CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                 .name("获取用户基本信息")
                 .uri("https://api.weixin.qq.com/cgi-bin/user/info?access_token={accessToken}&openid={openId}&lang=zh_CN")
                 .method(HttpMethod.GET)
-                .request(API.Request.<Request>builder().type(UserInfo.Request.class).withToken(true).build())
-                .response(API.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON_UTF8).type(UserInfo.Response.class).build())
+                .request(Invoker.Request.<Request>builder()
+                        .type(UserInfo.Request.class)
+                        .build())
+                .response(Invoker.Response.<Response>builder()
+                        .mediaType(MediaType.APPLICATION_JSON_UTF8)
+                        .type(UserInfo.Response.class)
+                        .build())
+                .tokenInvoker(AccessToken.INVOKER)
                 .build();
 
         @Setter
@@ -124,10 +117,10 @@ public interface APIs {
 
             @Override
             public String toString() {
-                return "UserInfo.Request {" +
-                        "accessToken=" + accessToken +
-                        ", openId=" + openId +
-                        '}';
+                return "UserInfo.Request {"
+                        + ", accessToken=" + super.accessToken
+                        + ", openId=" + openId
+                        + '}';
             }
         }
 
@@ -214,34 +207,36 @@ public interface APIs {
 
             @Override
             public String toString() {
-                return new StringJoiner(", ", "UserInfo." + Response.class.getSimpleName() + "[", "]")
-                        .add("subscribe=" + subscribe)
-                        .add("openId=" + openId)
-                        .add("language=" + language)
-                        .add("subscribeTime=" + subscribeTime)
-                        .add("unionId=" + unionId)
-                        .add("remark=" + remark)
-                        .add("groupId=" + groupId)
-                        .add("tagidList=" + tagidList)
-                        .add("subscribeScene=" + subscribeScene)
-                        .add("qrScene=" + qrScene)
-                        .add("qrSceneStr=" + qrSceneStr)
-                        .toString();
+                return "UserInfo.Response {"
+                        + "subscribe=" + subscribe
+                        + ", openId=" + openId
+                        + ", language=" + language
+                        + ", subscribeTime=" + subscribeTime
+                        + ", unionId=" + unionId
+                        + ", remark=" + remark
+                        + ", groupId=" + groupId
+                        + ", tagidList=" + tagidList
+                        + ", subscribeScene=" + subscribeScene
+                        + ", qrScene=" + qrScene
+                        +", qrSceneStr=" + qrSceneStr
+                        + '}';
             }
         }
     }
-
 
     /**
      * 获取用户列表
      */
     interface UserList {
-        WeixinAPI<Request, Response> INVOKER = WeixinAPI.<Request, Response>builder()
+        CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                 .name("获取用户基本信息")
                 .uri("https://api.weixin.qq.com/cgi-bin/user/get?access_token={accessToken}&next_openid={openId}")
                 .method(HttpMethod.GET)
-                .request(API.Request.<Request>builder().type(UserList.Request.class).withToken(true).build())
-                .response(API.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON_UTF8).type(UserList.Response.class).build())
+                .request(Invoker.Request.<Request>builder()
+                        .type(UserList.Request.class)
+                        .build())
+                .response(Invoker.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON_UTF8).type(UserList.Response.class).build())
+                .tokenInvoker(AccessToken.INVOKER)
                 .build();
 
         @Setter
@@ -255,10 +250,10 @@ public interface APIs {
 
             @Override
             public String toString() {
-                return "UserList.Request {" +
-                        "accessToken=" + accessToken +
-                        ", openId=" + openId +
-                        '}';
+                return "UserList.Request {"
+                        + "accessToken=" + super.accessToken
+                        + "openId=" + openId
+                        + '}';
             }
         }
 

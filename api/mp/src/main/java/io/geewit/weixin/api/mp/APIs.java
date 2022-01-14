@@ -2,10 +2,10 @@ package io.geewit.weixin.api.mp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.geewit.weixin.api.common.model.API;
+import io.geewit.weixin.api.common.model.Invoker;
 import io.geewit.weixin.api.common.model.CommonRequest;
 import io.geewit.weixin.api.common.model.CommonResponse;
-import io.geewit.weixin.api.common.model.WeixinAPI;
+import io.geewit.weixin.api.common.model.CommonInvoker;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
@@ -26,12 +26,12 @@ public interface APIs {
          * 生成带参数的二维码 接口定义
          */
         interface Create {
-            WeixinAPI<Request, Response> QRCODE_CREATE = WeixinAPI.<Request, Response>builder()
+            CommonInvoker<Request, Response> QRCODE_CREATE = CommonInvoker.<Request, Response>builder()
                     .name("生成带参数的二维码")
                     .uri("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={accessToken}")
                     .method(HttpMethod.POST)
-                    .request(API.Request.<Request>builder().type(QrCode.Create.Request.class).build())
-                    .response(API.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON).build())
+                    .request(Invoker.Request.<Request>builder().type(QrCode.Create.Request.class).build())
+                    .response(Invoker.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON).build())
                     .build();
 
             @Setter
@@ -110,12 +110,12 @@ public interface APIs {
          * 通过ticket换取二维码 接口定义
          */
         interface Show {
-            WeixinAPI<Request, Response> QRCODE_SHOW = WeixinAPI.<Request, Response>builder()
+            CommonInvoker<Request, Response> QRCODE_SHOW = CommonInvoker.<Request, Response>builder()
                     .name("生成带参数的二维码")
                     .uri("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}")
                     .method(HttpMethod.GET)
-                    .request(API.Request.<Request>builder().type(QrCode.Show.Request.class).build())
-                    .response(API.Response.<Response>builder().mediaType(MediaType.IMAGE_JPEG).build())
+                    .request(Invoker.Request.<Request>builder().type(QrCode.Show.Request.class).build())
+                    .response(Invoker.Response.<Response>builder().mediaType(MediaType.IMAGE_JPEG).build())
                     .build();
 
             @Setter

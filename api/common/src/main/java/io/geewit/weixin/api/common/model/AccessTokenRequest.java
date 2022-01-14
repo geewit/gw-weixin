@@ -11,12 +11,17 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public abstract class CommonRequest implements IRequest {
+public class AccessTokenRequest implements IRequest {
     private static final long serialVersionUID = 1L;
 
     /**
      * 第三方用户唯一凭证
      */
     @JsonIgnore
-    protected String accessToken;
+    protected String appId;
+    /**
+     * 第三方用户唯一凭证密钥,即appsecret
+     */
+    @JsonIgnore
+    protected String secret;
 }
