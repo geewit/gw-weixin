@@ -28,8 +28,8 @@ public class RedirectResponse implements IResponse {
 
     @Override
     public String toString() {
-        return "RedirectResponse{" +
-                "location=" + location +
-                '}';
+        return "RedirectResponse {"
+                + "location=" + location
+                + '}';
     }
 }

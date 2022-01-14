@@ -39,7 +39,7 @@ public class COMMONTest {
         AccessTokenRequest accessTokenRequest = new AccessTokenRequest();
         accessTokenRequest.setAppId(appId);
         accessTokenRequest.setSecret(secret);
-        COMMON.UserList.INVOKER.getTokenInvoker().setRequestParam(accessTokenRequest);
+        COMMON.UserList.INVOKER.initAccessTokenParams(accessTokenRequest);
         COMMON.UserList.Request userListRequest = new COMMON.UserList.Request();
         COMMON.UserList.Response response = COMMON.UserList.INVOKER.invoke(userListRequest);
         log.info(response.toString());

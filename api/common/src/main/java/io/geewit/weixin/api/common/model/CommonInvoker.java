@@ -53,7 +53,15 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
     /**
      * 获取 access_token 的 invoker
      */
-    private AccessTokenInvoker tokenInvoker;
+    private AccessTokenInvoker<? super AccessTokenRequest, ? extends AccessTokenResponse> tokenInvoker;
+
+    /**
+     * 初始化设置 获取 access_token 的参数
+     * @param request 获取 access_token 的参数
+     */
+    public <AT_REQ extends AccessTokenRequest> void initAccessTokenParams(AT_REQ request) {
+        this.tokenInvoker.setRequestParam(request);
+    }
 
     @Override
     public boolean equals(Object that) {
@@ -64,7 +72,7 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
             return false;
         }
 
-        CommonInvoker invoker = (CommonInvoker) that;
+        CommonInvoker<REQ, RES> invoker = (CommonInvoker<REQ, RES>) that;
 
         if (this.method != invoker.method) {
             return false;

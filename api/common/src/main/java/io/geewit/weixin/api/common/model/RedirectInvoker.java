@@ -58,7 +58,7 @@ public class RedirectInvoker<REQ extends IRequest, RES extends RedirectResponse>
             return false;
         }
 
-        RedirectInvoker invoker = (RedirectInvoker) that;
+        RedirectInvoker<REQ, RES> invoker = (RedirectInvoker<REQ, RES>) that;
 
         if (this.method != invoker.method) {
             return false;
@@ -75,7 +75,7 @@ public class RedirectInvoker<REQ extends IRequest, RES extends RedirectResponse>
 
     @Override
     public String toString() {
-        return "RedirectAPI {" +
+        return "RedirectInvoker {" +
                 "name=" + name +
                 ", uri=" + uri +
                 ", method=" + method +

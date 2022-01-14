@@ -31,3 +31,9 @@ gradlew
 /api/mp/logs/
 /api/mp/out
 /api/mp/.gradle
+/api/sns/*.iml
+/api/sns/*.bat
+/api/sns/target/
+/api/sns/logs/
+/api/sns/out
+/api/sns/.gradle

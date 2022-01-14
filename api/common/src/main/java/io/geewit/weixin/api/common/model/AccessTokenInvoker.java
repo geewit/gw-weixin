@@ -68,7 +68,7 @@ public class AccessTokenInvoker<REQ extends AccessTokenRequest, RES extends Acce
             return false;
         }
 
-        AccessTokenInvoker<?, ?> invoker = (AccessTokenInvoker<?, ?>) that;
+        AccessTokenInvoker<REQ, RES> invoker = (AccessTokenInvoker<REQ, RES>) that;
 
         if (this.method != invoker.method) {
             return false;

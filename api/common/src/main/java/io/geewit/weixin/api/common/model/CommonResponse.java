@@ -2,6 +2,7 @@ package io.geewit.weixin.api.common.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Setter;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Setter;
  * @since 2022-01-07
  */
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CommonResponse implements IResponse {
     private static final long serialVersionUID = 1L;
 
@@ -42,9 +44,9 @@ public class CommonResponse implements IResponse {
 
     @Override
     public String toString() {
-        return "CommonResponse{"
+        return "CommonResponse {"
                 + "errcode=" + errcode
-                + ", errmsg=" + errmsg +
-                '}';
+                + ", errmsg=" + errmsg
+                + '}';
     }
 }

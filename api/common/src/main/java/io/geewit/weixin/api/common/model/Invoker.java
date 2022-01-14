@@ -43,7 +43,7 @@ public interface Invoker<REQ extends IRequest, RES extends IResponse> {
 
         @Override
         public String toString() {
-            return "API.Request{ "
+            return "Invoker.Request {"
                     + "mediaType=" + mediaType
                     + ", type=" + type.getName()
                     + '}';
@@ -133,7 +133,7 @@ public interface Invoker<REQ extends IRequest, RES extends IResponse> {
 
         @Override
         public String toString() {
-            return "API.Response {"
+            return "Invoker.Response {"
                     + "mediaType=" + mediaType
                     + ", type=" + type
                     + ", expectCode=" + expectCode
