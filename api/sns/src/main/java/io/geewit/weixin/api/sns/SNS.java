@@ -191,7 +191,7 @@ public interface SNS {
          * 首先请注意，这里通过code换取的是一个特殊的网页授权access_token,与基础支持中的access_token（该access_token用于调用其他接口）不同。公众号可通过下述接口来获取网页授权access_token。如果网页授权的作用域为snsapi_base，则本步骤中获取到网页授权access_token的同时，也获取到了openid，snsapi_base式的网页授权流程即到此为止。
          * 尤其注意：由于公众号的secret和获取到的access_token安全级别都非常高，必须只保存在服务器，不允许传给客户端。后续刷新access_token、通过access_token获取用户信息等步骤，也必须从服务器发起。
          * 请求方法
-         * 获取code后，请求以下链接获取access_token： https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+         * 获取code后，请求以下链接获取access_token: https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
          */
         interface AccessToken {
             AccessTokenInvoker<Request, Response> INVOKER = AccessTokenInvoker.<Request, Response>builder()
@@ -204,6 +204,7 @@ public interface SNS {
                             .mediaType(MediaType.APPLICATION_JSON_UTF8)
                             .type(SNS.Login.AccessToken.Response.class)
                             .build())
+                    .expiredSeconds(7200)
                     .build();
 
             /**

@@ -42,11 +42,13 @@ public interface COMMON {
                 .uri("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={secret}")
                 .method(HttpMethod.GET)
                 .request(Invoker.Request.<AccessTokenRequest>builder()
+                        .type(AccessTokenRequest.class)
                         .build())
                 .response(Invoker.Response.<Response>builder()
                         .mediaType(MediaType.APPLICATION_JSON_UTF8)
                         .type(AccessToken.Response.class)
                         .build())
+                .expiredSeconds(7200)
                 .build();
 
         /**
@@ -56,27 +58,6 @@ public interface COMMON {
         @Setter
         @Getter
         class Response extends AccessTokenResponse {
-            public Response() {
-                loadTimestamp = System.currentTimeMillis();
-            }
-
-            /**
-             * 获取到的凭证
-             */
-            @JsonProperty(value = "access_token")
-            private String accessToken;
-
-            /**
-             * 凭证有效时间，单位：秒
-             */
-            @JsonProperty(value = "expires_in")
-            private Integer expiresIn;
-
-            /**
-             * 获取access_token的时间, 用于和当前时间对比判断是否过期
-             */
-            @JsonIgnore
-            private Long loadTimestamp;
 
             @Override
             public String toString() {

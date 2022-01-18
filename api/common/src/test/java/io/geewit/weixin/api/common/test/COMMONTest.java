@@ -18,7 +18,7 @@ public class COMMONTest {
 
     @ParameterizedTest
     @CsvSource({
-            "need_fill_in, need_fill_in, true",
+            "wx5dce3e9a10c64b42, de7b0349426aa31b94653037fa107f73, true",
             "1124855297488465920, 1124855297488465920, false",
     })
     public void testAccessToken(String appId, String secret, String expect) {
@@ -31,7 +31,7 @@ public class COMMONTest {
 
     @ParameterizedTest
     @CsvSource({
-            "need_fill_in, need_fill_in"
+            "wx5dce3e9a10c64b42, de7b0349426aa31b94653037fa107f73"
     })
     public void testUserList(String appId, String secret) {
         AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder().appId(appId).secret(secret).build();

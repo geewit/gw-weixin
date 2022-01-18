@@ -42,7 +42,7 @@ public class AccessTokenResponse extends CommonResponse {
      * @return true: 过期, false: 有效
      */
     public boolean expired() {
-        if(loadTimestamp == null) {
+        if(loadTimestamp == null || expiresIn == null) {
             return true;
         } else {
             long expiredTimestamp = loadTimestamp + expiresIn * 1000;

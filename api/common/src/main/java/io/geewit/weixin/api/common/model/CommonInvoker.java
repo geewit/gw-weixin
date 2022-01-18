@@ -2,6 +2,7 @@ package io.geewit.weixin.api.common.model;
 
 import io.geewit.core.utils.reflection.BeanUtils;
 import io.geewit.weixin.api.common.exception.WxApiException;
+import io.geewit.weixin.api.common.utils.AccessTokenUtils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -107,8 +108,8 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
     public URI renderUri(REQ request) {
         UriTemplate uriTemplate = new UriTemplate(this.getUri());
         String accessToken;
-        if (this.getTokenInvoker() != null) {
-            AccessTokenResponse accessTokenResponse = this.getTokenInvoker().invoke();
+        if (this.tokenInvoker != null) {
+            AccessTokenResponse accessTokenResponse = AccessTokenUtils.getAccessTokenCached(this.tokenInvoker);
             if (StringUtils.isBlank(accessTokenResponse.getAccessToken())) {
                 throw new IllegalArgumentException("接口(" + this.getName() + ")的请求access_token不能为空");
             } else {
