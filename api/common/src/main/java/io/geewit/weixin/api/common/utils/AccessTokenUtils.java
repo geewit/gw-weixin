@@ -1,16 +1,19 @@
 package io.geewit.weixin.api.common.utils;
 
+import com.google.common.hash.Hashing;
 import io.geewit.weixin.api.common.exception.WxApiException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.geewit.weixin.api.common.model.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -102,7 +105,7 @@ public class AccessTokenUtils {
      * @return RES extends AccessTokenResponse
      */
     private static <REQ extends AccessTokenRequest, RES extends AccessTokenResponse> RES getAccessTokenFromPersistence(AccessTokenInvoker<REQ, RES> invoker) {
-        String tempFilepath = tempPath + File.separator + invoker.getClass().getSimpleName() + File.separator + "access_token_cache";
+        String tempFilepath = StringUtils.appendIfMissing(tempPath, File.separator) + "access_token_cache" + File.separator + Hashing.sha1().hashString(invoker.getClass().getSimpleName(), StandardCharsets.UTF_8) + File.separator + Hashing.sha1().hashString(invoker.getName(), StandardCharsets.UTF_8);
         logger.debug("tempPath : {}", tempFilepath);
         Path tempPath = Paths.get(tempFilepath);
         if (Files.notExists(tempPath)) {
