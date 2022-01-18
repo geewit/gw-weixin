@@ -20,9 +20,7 @@ public class SNSTest {
             "need_fill_in",
     })
     public void testOauth2Code(String appId) {
-        SNS.Login.OAuth2Code.Request request = new SNS.Login.OAuth2Code.Request();
-        request.setAppId(appId);
-        request.setRedirectUri("https://www.geewit.io");
+        SNS.Login.OAuth2Code.Request request = SNS.Login.OAuth2Code.Request.builder().appId(appId).redirectUri("https://www.geewit.io").build();
         request.setScope(SNS.Login.OAuth2Code.RequestScope.snsapi_base);
         request.setState("A01");
         SNS.Login.OAuth2Code.Response response = SNS.Login.OAuth2Code.INVOKER.invoke(request);
@@ -34,11 +32,9 @@ public class SNSTest {
             "need_fill_in, need_fill_in"
     })
     public void testUserList(String appId, String secret) {
-        AccessTokenRequest accessTokenRequest = new AccessTokenRequest();
-        accessTokenRequest.setAppId(appId);
-        accessTokenRequest.setSecret(secret);
+        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder().appId(appId).secret(secret).build();
         COMMON.UserList.INVOKER.initAccessTokenParams(accessTokenRequest);
-        COMMON.UserList.Request userListRequest = new COMMON.UserList.Request();
+        COMMON.UserList.Request userListRequest = COMMON.UserList.Request.builder().build();
         COMMON.UserList.Response response = COMMON.UserList.INVOKER.invoke(userListRequest);
         log.info(response.toString());
     }

@@ -6,6 +6,7 @@ import io.geewit.weixin.api.common.model.Invoker;
 import io.geewit.weixin.api.common.model.CommonRequest;
 import io.geewit.weixin.api.common.model.CommonResponse;
 import io.geewit.weixin.api.common.model.CommonInvoker;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
@@ -15,7 +16,7 @@ import org.springframework.http.MediaType;
  * @author geewit
  * @since 2022-01-07
  */
-public interface APIs {
+public interface MP {
 
     /**
      * 二维码 接口定义
@@ -26,7 +27,7 @@ public interface APIs {
          * 生成带参数的二维码 接口定义
          */
         interface Create {
-            CommonInvoker<Request, Response> QRCODE_CREATE = CommonInvoker.<Request, Response>builder()
+            CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                     .name("生成带参数的二维码")
                     .uri("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={accessToken}")
                     .method(HttpMethod.POST)
@@ -34,6 +35,10 @@ public interface APIs {
                     .response(Invoker.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON).build())
                     .build();
 
+            /**
+             * 生成带参数的二维码的请求参数
+             */
+            @Builder
             @Setter
             @Getter
             class Request extends CommonRequest {
@@ -49,32 +54,36 @@ public interface APIs {
                  */
                 @JsonProperty(value = "action_info")
                 private ActionInfo actionInfo;
-
-                @Setter
-                @Getter
-                class ActionInfo {
-                    @JsonProperty("scene")
-                    private Scene scene;
-                }
-
-                @Setter
-                @Getter
-                class Scene {
-                    /**
-                     * 场景值ID，临时二维码时为32位非0整型，永久二维码时最大值为100000（目前参数只支持1--100000）
-                     */
-                    @JsonProperty("scene_id")
-                    private Integer sceneId;
-
-                    /**
-                     * 场景值ID（字符串形式的ID），字符串类型，长度限制为1到64
-                     */
-                    @JsonProperty("scene_str")
-                    private String sceneStr;
-                }
             }
 
+            @Builder
+            @Setter
+            @Getter
+            class ActionInfo {
+                @JsonProperty("scene")
+                private Scene scene;
+            }
 
+            @Builder
+            @Setter
+            @Getter
+            class Scene {
+                /**
+                 * 场景值ID，临时二维码时为32位非0整型，永久二维码时最大值为100000（目前参数只支持1--100000）
+                 */
+                @JsonProperty("scene_id")
+                private Integer sceneId;
+
+                /**
+                 * 场景值ID（字符串形式的ID），字符串类型，长度限制为1到64
+                 */
+                @JsonProperty("scene_str")
+                private String sceneStr;
+            }
+
+            /**
+             * 生成带参数的二维码的返回参数
+             */
             @Setter
             @Getter
             class Response extends CommonResponse {
@@ -110,7 +119,7 @@ public interface APIs {
          * 通过ticket换取二维码 接口定义
          */
         interface Show {
-            CommonInvoker<Request, Response> QRCODE_SHOW = CommonInvoker.<Request, Response>builder()
+            CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                     .name("生成带参数的二维码")
                     .uri("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}")
                     .method(HttpMethod.GET)
@@ -118,6 +127,7 @@ public interface APIs {
                     .response(Invoker.Response.<Response>builder().mediaType(MediaType.IMAGE_JPEG).build())
                     .build();
 
+            @Builder
             @Setter
             @Getter
             class Request extends CommonRequest {

@@ -100,11 +100,11 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
     }
 
     /**
-     * 调用接口
-     * @param request
-     * @return
+     * 根据请求参数渲染请求URI
+     * @param request 请求参数
+     * @return 请求URI
      */
-    public RES invoke(REQ request) {
+    public URI renderUri(REQ request) {
         UriTemplate uriTemplate = new UriTemplate(this.getUri());
         String accessToken;
         if (this.getTokenInvoker() != null) {
@@ -120,6 +120,16 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
         request.setAccessToken(accessToken);
         Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
         URI requestUri = uriTemplate.expand(uriVariables);
+        return requestUri;
+    }
+
+    /**
+     * 调用接口
+     * @param request
+     * @return
+     */
+    public RES invoke(REQ request) {
+        URI requestUri = this.renderUri(request);
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<REQ> requestEntity;
         if (EnumSet.of(HttpMethod.POST, HttpMethod.PUT).contains(this.getMethod())) {

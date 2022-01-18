@@ -22,9 +22,7 @@ public class COMMONTest {
             "1124855297488465920, 1124855297488465920, false",
     })
     public void testAccessToken(String appId, String secret, String expect) {
-        AccessTokenRequest accessTokenRequest = new AccessTokenRequest();
-        accessTokenRequest.setAppId(appId);
-        accessTokenRequest.setSecret(secret);
+        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder().appId(appId).secret(secret).build();
         COMMON.AccessToken.INVOKER.setRequestParam(accessTokenRequest);
         COMMON.AccessToken.Response response = COMMON.AccessToken.INVOKER.invoke();
         String accessToken = response.getAccessToken();
@@ -36,11 +34,9 @@ public class COMMONTest {
             "need_fill_in, need_fill_in"
     })
     public void testUserList(String appId, String secret) {
-        AccessTokenRequest accessTokenRequest = new AccessTokenRequest();
-        accessTokenRequest.setAppId(appId);
-        accessTokenRequest.setSecret(secret);
+        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder().appId(appId).secret(secret).build();
         COMMON.UserList.INVOKER.initAccessTokenParams(accessTokenRequest);
-        COMMON.UserList.Request userListRequest = new COMMON.UserList.Request();
+        COMMON.UserList.Request userListRequest = COMMON.UserList.Request.builder().build();
         COMMON.UserList.Response response = COMMON.UserList.INVOKER.invoke(userListRequest);
         log.info(response.toString());
     }

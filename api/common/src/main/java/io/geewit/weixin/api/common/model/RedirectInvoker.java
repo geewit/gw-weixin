@@ -85,14 +85,24 @@ public class RedirectInvoker<REQ extends IRequest, RES extends RedirectResponse>
     }
 
     /**
+     * 根据请求参数渲染请求URI
+     * @param request 请求参数
+     * @return 请求URI
+     */
+    public URI renderUri(REQ request) {
+        UriTemplate uriTemplate = new UriTemplate(this.getUri());
+        Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
+        URI requestUri = uriTemplate.expand(uriVariables);
+        return requestUri;
+    }
+
+    /**
      * 调用接口
      * @param request
      * @return
      */
     public RES invoke(REQ request) {
-        UriTemplate uriTemplate = new UriTemplate(this.getUri());
-        Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
-        URI requestUri = uriTemplate.expand(uriVariables);
+        URI requestUri = this.renderUri(request);
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<REQ> requestEntity;
         if (EnumSet.of(HttpMethod.POST, HttpMethod.PUT).contains(this.getMethod())) {

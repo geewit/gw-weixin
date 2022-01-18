@@ -3,8 +3,10 @@ package io.geewit.weixin.api.sns;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.geewit.weixin.api.common.model.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -82,6 +84,7 @@ public interface SNS {
                             .build())
                     .build();
 
+            @Builder
             @Setter
             @Getter
             class Request implements IRequest {
@@ -101,8 +104,9 @@ public interface SNS {
                  * snsapi_base (不弹出授权页面, 直接跳转, 只能获取用户openid),
                  * snsapi_userinfo (弹出授权页面, 可通过openid拿到昵称、性别、所在地. 并且, 即使在未关注的情况下, 只要用户授权, 也能获取其信息)
                  */
+                @Builder.Default
                 @JsonIgnore
-                private RequestScope scope;
+                private RequestScope scope = RequestScope.snsapi_base;
 
                 /**
                  * 重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
@@ -206,6 +210,7 @@ public interface SNS {
              * appId: 公众号的唯一标识
              * secret: 公众号的appsecret
              */
+            @SuperBuilder
             @Setter
             @Getter
             class Request extends AccessTokenRequest {
@@ -287,6 +292,7 @@ public interface SNS {
             /**
              * appId: 公众号的唯一标识
              */
+            @SuperBuilder
             @Setter
             @Getter
             class Request extends AccessTokenRequest {
@@ -364,6 +370,10 @@ public interface SNS {
                             .build())
                     .build();
 
+            /**
+             * 拉取用户信息的请求参数
+             */
+            @Builder
             @Setter
             @Getter
             class Request extends CommonRequest {
@@ -382,6 +392,9 @@ public interface SNS {
                 }
             }
 
+            /**
+             * 拉取用户信息的返回参数
+             */
             @Setter
             @Getter
             class Response extends CommonResponse {

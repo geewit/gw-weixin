@@ -3,6 +3,7 @@ package io.geewit.weixin.api.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.geewit.weixin.api.common.model.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
@@ -106,6 +107,7 @@ public interface COMMON {
                 .tokenInvoker(AccessToken.INVOKER)
                 .build();
 
+        @Builder
         @Setter
         @Getter
         class Request extends CommonRequest {
@@ -239,6 +241,7 @@ public interface COMMON {
                 .tokenInvoker(AccessToken.INVOKER)
                 .build();
 
+        @Builder
         @Setter
         @Getter
         class Request extends CommonRequest {
