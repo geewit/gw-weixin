@@ -33,7 +33,7 @@ public class SNSTest {
     })
     public void testUserList(String appId, String secret) {
         AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder().appId(appId).secret(secret).build();
-        COMMON.UserList.INVOKER.initAccessTokenParams(accessTokenRequest);
+        COMMON.UserList.INVOKER.install(accessTokenRequest);
         COMMON.UserList.Request userListRequest = COMMON.UserList.Request.builder().build();
         COMMON.UserList.Response response = COMMON.UserList.INVOKER.invoke(userListRequest);
         log.info(response.toString());

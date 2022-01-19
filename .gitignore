@@ -37,3 +37,15 @@ gradlew
 /api/sns/logs/
 /api/sns/out
 /api/sns/.gradle
+/event/*.iml
+/event/*.bat
+/event/target/
+/event/logs/
+/event/out
+/event/.gradle
+/event/mp/*.iml
+/event/mp/*.bat
+/event/mp/target/
+/event/mp/logs/
+/event/mp/out
+/event/mp/.gradle

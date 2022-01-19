@@ -48,12 +48,35 @@ public interface MP {
                  * 二维码类型，QR_SCENE为临时的整型参数值，QR_STR_SCENE为临时的字符串参数值，QR_LIMIT_SCENE为永久的整型参数值，QR_LIMIT_STR_SCENE为永久的字符串参数值
                  */
                 @JsonProperty("action_name")
-                private String actionName;
+                private QrType actionName;
                 /**
                  * 二维码详细信息
                  */
                 @JsonProperty(value = "action_info")
                 private ActionInfo actionInfo;
+            }
+
+            /**
+             * action_name
+             * 二维码类型
+             */
+            enum QrType {
+                /**
+                 * 临时的整型
+                 */
+                QR_SCENE,
+                /**
+                 * 临时的字符串
+                 */
+                QR_STR_SCENE,
+                /**
+                 * 永久的整型
+                 */
+                QR_LIMIT_SCENE,
+                /**
+                 * 永久的字符串
+                 */
+                QR_LIMIT_STR_SCENE
             }
 
             @Builder

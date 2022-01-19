@@ -60,8 +60,9 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
      * 初始化设置 获取 access_token 的参数
      * @param request 获取 access_token 的参数
      */
-    public <AT_REQ extends AccessTokenRequest> void initAccessTokenParams(AT_REQ request) {
+    public <AT_REQ extends AccessTokenRequest> CommonInvoker<REQ, RES> install(AT_REQ request) {
         this.tokenInvoker.setRequestParam(request);
+        return this;
     }
 
     @Override
