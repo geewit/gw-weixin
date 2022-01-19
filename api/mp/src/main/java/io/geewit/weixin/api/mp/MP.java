@@ -27,12 +27,13 @@ public interface MP {
          * 生成带参数的二维码 接口定义
          */
         interface Create {
+            @SuppressWarnings("deprecation")
             CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                     .name("生成带参数的二维码")
                     .uri("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={accessToken}")
                     .method(HttpMethod.POST)
                     .request(Invoker.Request.<Request>builder().type(QrCode.Create.Request.class).build())
-                    .response(Invoker.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON).build())
+                    .response(Invoker.Response.<Response>builder().mediaType(MediaType.APPLICATION_JSON_UTF8).build())
                     .build();
 
             /**

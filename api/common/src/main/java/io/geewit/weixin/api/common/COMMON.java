@@ -37,6 +37,7 @@ public interface COMMON {
      * https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
      */
     interface AccessToken {
+        @SuppressWarnings("deprecation")
         AccessTokenInvoker<AccessTokenRequest, Response> INVOKER = AccessTokenInvoker.<AccessTokenRequest, Response>builder()
                 .name("获取AccessToken")
                 .uri("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={secret}")
@@ -74,6 +75,7 @@ public interface COMMON {
      * 获取用户基本信息(UnionID机制)
      */
     interface UserInfo {
+        @SuppressWarnings("deprecation")
         CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                 .name("获取用户基本信息")
                 .uri("https://api.weixin.qq.com/cgi-bin/user/info?access_token={accessToken}&openid={openId}&lang=zh_CN")
@@ -211,6 +213,7 @@ public interface COMMON {
      * 获取用户列表
      */
     interface UserList {
+        @SuppressWarnings("deprecation")
         CommonInvoker<Request, Response> INVOKER = CommonInvoker.<Request, Response>builder()
                 .name("获取用户基本信息")
                 .uri("https://api.weixin.qq.com/cgi-bin/user/get?access_token={accessToken}&next_openid={openId}")

@@ -194,6 +194,7 @@ public interface SNS {
          * 获取code后，请求以下链接获取access_token: https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
          */
         interface AccessToken {
+            @SuppressWarnings("deprecation")
             AccessTokenInvoker<Request, Response> INVOKER = AccessTokenInvoker.<Request, Response>builder()
                     .name("通过code换取网页授权access_token")
                     .uri("https://api.weixin.qq.com/sns/oauth2/access_token?appid={appId}&secret={secret}&code={code}&grant_type=authorization_code")
@@ -277,6 +278,7 @@ public interface SNS {
          * 获取第二步的refresh_token后，请求以下链接获取access_token： https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
          */
         interface RefreshToken {
+            @SuppressWarnings("deprecation")
             AccessTokenInvoker<Request, Response> INVOKER = AccessTokenInvoker.<Request, Response>builder()
                     .name("刷新access_token")
                     .uri("https://api.weixin.qq.com/sns/oauth2/refresh_token?appid={appId}&grant_type=refresh_token&refresh_token={refreshToken}")
@@ -358,6 +360,7 @@ public interface SNS {
          * http：GET（请使用https协议） https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
          */
         interface UserInfo {
+            @SuppressWarnings("deprecation")
             CommonInvoker<Request, Response> INVOKER = CommonInvoker.<SNS.Login.UserInfo.Request, SNS.Login.UserInfo.Response>builder()
                     .name("拉取用户信息")
                     .uri("https://api.weixin.qq.com/sns/userinfo?access_token={accessToken}&openid={openId}&lang=zh_CN")
