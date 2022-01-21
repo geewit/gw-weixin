@@ -1,0 +1,5 @@
+rootProject.name = 'mp'
+
+include 'common'
+include 'webmvc'
+

@@ -49,3 +49,15 @@ gradlew
 /event/mp/logs/
 /event/mp/out
 /event/mp/.gradle
+/event/mp/common/*.iml
+/event/mp/common/*.bat
+/event/mp/common/target/
+/event/mp/common/logs/
+/event/mp/common/out
+/event/mp/common/.gradle
+/event/mp/webmvc/*.iml
+/event/mp/webmvc/*.bat
+/event/mp/webmvc/target/
+/event/mp/webmvc/logs/
+/event/mp/webmvc/out
+/event/mp/webmvc/.gradle
