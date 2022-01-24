@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "name": "io.geewit.weixin.event.mp.filter",
+      "type": "io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties",
+      "sourceType": "io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "io.geewit.weixin.event.mp.filter.filter-name",
+      "type": "java.lang.String",
+      "sourceType": "io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties",
+      "defaultValue": "wxMpEventFilter"
+    },
+    {
+      "name": "io.geewit.weixin.event.mp.filter.context-path",
+      "type": "java.lang.String",
+      "sourceType": "io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties",
+      "defaultValue": "/wx"
+    },
+    {
+      "name": "io.geewit.weixin.event.mp.filter.listener-path",
+      "type": "java.lang.String",
+      "sourceType": "io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties",
+      "defaultValue": "/mp/event-filters"
+    },
+    {
+      "name": "io.geewit.weixin.event.mp.filter.order",
+      "type": "java.lang.Integer",
+      "sourceType": "io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties",
+      "defaultValue": -10000
+    }
+  ],
+  "hints": []
+}

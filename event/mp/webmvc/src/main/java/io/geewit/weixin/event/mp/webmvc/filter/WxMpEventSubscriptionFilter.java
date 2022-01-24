@@ -44,8 +44,8 @@ public class WxMpEventSubscriptionFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
-
-        PathContainer prePathContainer = PathContainer.parsePath(this.urlPatterns);
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        PathContainer prePathContainer = PathContainer.parsePath(httpServletRequest.getRequestURI());
         PathPattern prePathPattern = PathPatternParser.defaultInstance.parse(this.urlPatterns);
         PathPattern.PathMatchInfo prePathMatchInfo = prePathPattern.matchAndExtract(prePathContainer);
         if (prePathMatchInfo == null) {
@@ -53,7 +53,7 @@ public class WxMpEventSubscriptionFilter implements Filter {
         }
         Map<String, String> prePathVariables = prePathMatchInfo.getUriVariables();
         String appId = prePathVariables.get(APPID_PARAM_NAME);
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         if (HttpMethod.GET.matches(httpServletRequest.getMethod())) {
             this.doGet(appId, httpServletRequest, httpServletResponse);
