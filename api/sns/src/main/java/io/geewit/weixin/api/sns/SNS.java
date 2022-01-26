@@ -351,127 +351,126 @@ public interface SNS {
                 }
             }
         }
+    }
+
+    /**
+     * 第四步：拉取用户信息(需scope为 snsapi_userinfo)
+     * 如果网页授权作用域为snsapi_userinfo，则此时开发者可以通过access_token和openid拉取用户信息了。
+     *
+     * 请求方法
+     * http：GET（请使用https协议） https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+     */
+    interface UserInfo {
+        @SuppressWarnings("deprecation")
+        CommonInvoker<Request, Response> INVOKER = CommonInvoker.<SNS.UserInfo.Request, SNS.UserInfo.Response>builder()
+                .name("拉取用户信息")
+                .uri("https://api.weixin.qq.com/sns/userinfo?access_token={accessToken}&openid={openId}&lang=zh_CN")
+                .method(HttpMethod.GET)
+                .request(Invoker.Request.<SNS.UserInfo.Request>builder()
+                        .type(SNS.UserInfo.Request.class)
+                        .build())
+                .response(Invoker.Response.<SNS.UserInfo.Response>builder()
+                        .mediaType(MediaType.APPLICATION_JSON_UTF8)
+                        .type(SNS.UserInfo.Response.class)
+                        .build())
+                .build();
 
         /**
-         * 第四步：拉取用户信息(需scope为 snsapi_userinfo)
-         * 如果网页授权作用域为snsapi_userinfo，则此时开发者可以通过access_token和openid拉取用户信息了。
-         *
-         * 请求方法
-         * http：GET（请使用https协议） https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+         * 拉取用户信息的请求参数
          */
-        interface UserInfo {
-            @SuppressWarnings("deprecation")
-            CommonInvoker<Request, Response> INVOKER = CommonInvoker.<SNS.Login.UserInfo.Request, SNS.Login.UserInfo.Response>builder()
-                    .name("拉取用户信息")
-                    .uri("https://api.weixin.qq.com/sns/userinfo?access_token={accessToken}&openid={openId}&lang=zh_CN")
-                    .method(HttpMethod.GET)
-                    .request(Invoker.Request.<SNS.Login.UserInfo.Request>builder()
-                            .type(SNS.Login.UserInfo.Request.class)
-                            .build())
-                    .response(Invoker.Response.<SNS.Login.UserInfo.Response>builder()
-                            .mediaType(MediaType.APPLICATION_JSON_UTF8)
-                            .type(SNS.Login.UserInfo.Response.class)
-                            .build())
-                    .build();
-
+        @SuperBuilder
+        @Setter
+        @Getter
+        class Request extends CommonRequest {
             /**
-             * 拉取用户信息的请求参数
+             * 用户的唯一标识
              */
-            @Builder
-            @Setter
-            @Getter
-            class Request extends CommonRequest {
-                /**
-                 * 用户的唯一标识
-                 */
-                @JsonIgnore
-                private String openId;
+            @JsonIgnore
+            private String openId;
 
-                @Override
-                public String toString() {
-                    return "UserInfo.Request {"
-                            + "accessToken=" + accessToken
-                            + ", openId=" + openId
-                            + '}';
-                }
+            @Override
+            public String toString() {
+                return "UserInfo.Request {"
+                        + "accessToken=" + accessToken
+                        + ", openId=" + openId
+                        + '}';
             }
+        }
+
+        /**
+         * 拉取用户信息的返回参数
+         */
+        @Setter
+        @Getter
+        class Response extends CommonResponse {
+            /**
+             * 用户的唯一标识
+             */
+            @JsonProperty(value = "openid")
+            private String openId;
 
             /**
-             * 拉取用户信息的返回参数
+             * 用户昵称
              */
-            @Setter
-            @Getter
-            class Response extends CommonResponse {
-                /**
-                 * 用户的唯一标识
-                 */
-                @JsonProperty(value = "openid")
-                private String openId;
+            @JsonProperty(value = "nickname")
+            private String nickname;
 
-                /**
-                 * 用户昵称
-                 */
-                @JsonProperty(value = "nickname")
-                private String nickname;
+            /**
+             * 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
+             */
+            @JsonProperty(value = "sex")
+            private Integer sex;
 
-                /**
-                 * 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
-                 */
-                @JsonProperty(value = "sex")
-                private Integer sex;
+            /**
+             * 用户个人资料填写的省份
+             */
+            @JsonProperty(value = "province")
+            private String province;
 
-                /**
-                 * 用户个人资料填写的省份
-                 */
-                @JsonProperty(value = "province")
-                private String province;
+            /**
+             * 普通用户个人资料填写的城市
+             */
+            @JsonProperty(value = "city")
+            private String city;
 
-                /**
-                 * 普通用户个人资料填写的城市
-                 */
-                @JsonProperty(value = "city")
-                private String city;
+            /**
+             * 国家，如中国为CN
+             */
+            @JsonProperty(value = "country")
+            private String country;
 
-                /**
-                 * 国家，如中国为CN
-                 */
-                @JsonProperty(value = "country")
-                private String country;
+            /**
+             * 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
+             */
+            @JsonProperty(value = "headimgurl")
+            private String headimgUrl;
 
-                /**
-                 * 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
-                 */
-                @JsonProperty(value = "headimgurl")
-                private String headimgUrl;
+            /**
+             * 用户特权信息，json 数组，如微信沃卡用户为(chinaunicom)
+             */
+            @JsonProperty(value = "privilege")
+            private List<String> privilege;
 
-                /**
-                 * 用户特权信息，json 数组，如微信沃卡用户为(chinaunicom)
-                 */
-                @JsonProperty(value = "privilege")
-                private List<String> privilege;
+            /**
+             * 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段
+             */
+            @JsonProperty(value = "unionid")
+            private String unionId;
 
-                /**
-                 * 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段
-                 */
-                @JsonProperty(value = "unionid")
-                private String unionId;
-
-                @Override
-                public String toString() {
-                    return "UserInfo.Response {"
-                            + "openId=" + openId
-                            + ", nickname=" + nickname
-                            + ", sex=" + sex
-                            + ", province=" + province
-                            + ", city=" + city
-                            + ", country=" + country
-                            + ", headimgUrl=" + headimgUrl
-                            + ", privilege=" + privilege
-                            + ", unionId=" + unionId
-                            + '}';
-                }
+            @Override
+            public String toString() {
+                return "UserInfo.Response {"
+                        + "openId=" + openId
+                        + ", nickname=" + nickname
+                        + ", sex=" + sex
+                        + ", province=" + province
+                        + ", city=" + city
+                        + ", country=" + country
+                        + ", headimgUrl=" + headimgUrl
+                        + ", privilege=" + privilege
+                        + ", unionId=" + unionId
+                        + '}';
             }
         }
     }
-
 }

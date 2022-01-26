@@ -59,6 +59,11 @@ public class AccessTokenInvoker<REQ extends AccessTokenRequest, RES extends Acce
      */
     private Integer expiredSeconds;
 
+    public AccessTokenInvoker<REQ, RES> setRequestParam(REQ requestParam) {
+        this.requestParam = requestParam;
+        return this;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

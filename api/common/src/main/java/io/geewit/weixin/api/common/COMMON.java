@@ -6,6 +6,7 @@ import io.geewit.weixin.api.common.model.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
@@ -90,7 +91,7 @@ public interface COMMON {
                 .tokenInvoker(AccessToken.INVOKER)
                 .build();
 
-        @Builder
+        @SuperBuilder
         @Setter
         @Getter
         class Request extends CommonRequest {
@@ -225,7 +226,7 @@ public interface COMMON {
                 .tokenInvoker(AccessToken.INVOKER)
                 .build();
 
-        @Builder
+        @SuperBuilder
         @Setter
         @Getter
         class Request extends CommonRequest {

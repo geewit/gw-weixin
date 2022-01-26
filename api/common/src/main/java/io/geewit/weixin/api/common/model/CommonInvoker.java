@@ -108,18 +108,18 @@ public class CommonInvoker<REQ extends CommonRequest, RES extends CommonResponse
      */
     public URI renderUri(REQ request) {
         UriTemplate uriTemplate = new UriTemplate(this.getUri());
-        String accessToken;
-        if (this.tokenInvoker != null) {
+        if (request.accessToken == null) {
+            if (this.tokenInvoker == null) {
+                throw new IllegalArgumentException("没有配置tokenInvoker");
+            }
             AccessTokenResponse accessTokenResponse = AccessTokenUtils.getAccessTokenCached(this.tokenInvoker);
             if (StringUtils.isBlank(accessTokenResponse.getAccessToken())) {
                 throw new IllegalArgumentException("接口(" + this.getName() + ")的请求access_token不能为空");
             } else {
-                accessToken = accessTokenResponse.getAccessToken();
+                request.accessToken = accessTokenResponse.getAccessToken();
             }
-        } else {
-            accessToken = null;
         }
-        request.setAccessToken(accessToken);
+
         Map<String, ?> uriVariables = BeanUtils.pojoToMap(request);
         URI requestUri = uriTemplate.expand(uriVariables);
         return requestUri;

@@ -9,6 +9,7 @@ import io.geewit.weixin.api.common.model.CommonInvoker;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
@@ -39,7 +40,7 @@ public interface MP {
             /**
              * 生成带参数的二维码的请求参数
              */
-            @Builder
+            @SuperBuilder
             @Setter
             @Getter
             class Request extends CommonRequest {
@@ -151,7 +152,7 @@ public interface MP {
                     .response(Invoker.Response.<Response>builder().mediaType(MediaType.IMAGE_JPEG).build())
                     .build();
 
-            @Builder
+            @SuperBuilder
             @Setter
             @Getter
             class Request extends CommonRequest {

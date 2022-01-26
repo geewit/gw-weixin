@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.geewit.weixin.event.mp.webmvc.config.WxMpEventFilterProperties.APPID_PARAM_NAME;
@@ -126,8 +127,13 @@ public class WxMpEventSubscriptionFilter implements Filter {
         boolean isAccessable = StringUtils.isNotBlank(appId);
         String token = null;
         if (isAccessable) {
-            token = appTokenService.getTokenByAppId(appId);
-            isAccessable = StringUtils.isNotBlank(token);
+            Optional<String> tokenOptional = appTokenService.getTokenByAppId(appId);
+            if (tokenOptional.isPresent()) {
+                token = tokenOptional.get();
+            } else {
+                isAccessable = false;
+            }
+
         }
         String timestamp = request.getParameter("timestamp");
         if (isAccessable) {
